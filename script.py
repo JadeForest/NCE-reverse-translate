@@ -1,6 +1,6 @@
 import os
 
-DIR = '新概念英语4'
+DIR = '新概念英语2'
 os.chdir(os.getcwd()+f'\\{DIR}')
 
 jscript = '''
@@ -16,19 +16,6 @@ jscript = '''
 </script>
 '''
 
-def create_html(title, lines):
-    with open(title+'.html','w',encoding='UTF-8') as html_file:
-        for i, (en, zh) in enumerate(zip(lines[::2], lines[1::2])):
-            html = (f'<div>{zh}</div>'
-                    +'<input type="text" size=200><br>'
-                    +'<div><input type="submit" value="答案" onclick="display(\'{}\')">'.format(i)
-                    +f'<span id="{i}" style="display:none">{en}</span></div><br>')
-
-            html_file.write(html+'\n')
-            
-        html_file.write(jscript)
-
-
 with open('titles.txt','r',encoding='utf-8') as f:
     titles = f.readlines()
 
@@ -41,5 +28,15 @@ lessons = [s for s in lessons if s]
 
 for title, lesson in zip(titles, lessons):
     lines = lesson.split('\n')
-    lines = [s.strip('0123456789. ') for s in lines[1:] if s]
-    create_html(title, lines)
+    lines = [s.strip() for s in lines[1:] if s]
+    with open(title+'.html','w',encoding='UTF-8') as html_file:
+        for i, (en, zh) in enumerate(zip(lines[::2], lines[1::2])):
+            en = en.lstrip('0123456789.')
+            html = (f'<div>{zh}</div>'
+                    +'<input type="text" size=200><br>'
+                    +'<div><input type="submit" value="答案" onclick="display(\'{}\')">'.format(i)
+                    +f'<span id="{i}" style="display:none">{en}</span></div><br>')
+
+            html_file.write(html+'\n')
+            
+        html_file.write(jscript)
